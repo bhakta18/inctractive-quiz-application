@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App</title>
+</head>
+
+<body>
+    <div id="root"></div>
+</body>
+<script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+<script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const { useState } = React;
+
+    const questions = [
+        {
+            question: "What is the capital of France?",
+            options: ["Paris", "London", "Rome", "Berlin"],
+            answer: "Paris",
+        },
+        {
+            question: "Which planet is known as the Red Planet?",
+            options: ["Earth", "Mars", "Jupiter", "Saturn"],
+            answer: "Mars",
+        },
+        {
+            question: "What is the largest ocean on Earth?",
+            options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+            answer: "Pacific Ocean",
+        },
+    ];
+
+    const Quiz = () => {
+        const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+        const [score, setScore] = useState(null);
+
+        const handleChange = (index, selectedOption) => {
+            const newAnswers = [...answers];
+            newAnswers[index] = selectedOption;
+            setAnswers(newAnswers);
+        };
+
+        const handleSubmit = (event) => {
+            event.preventDefault();
+            const newScore = answers.reduce((total, answer, index) => {
+                return total + (answer === questions[index].answer ? 1 : 0);
+            }, 0);
+            setScore(newScore);
+        };
+
+        const handleRestart = () => {
+            setAnswers(Array(questions.length).fill(null));
+            setScore(null);
+        };
+
+        return (
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+                <h2>Simple Quiz</h2>
+                {score === null ? (
+                    <form onSubmit={handleSubmit}>
+                        {questions.map((q, index) => (
+                            <div key={index} style={{ marginBottom: '20px' }}>
+                                <p>{q.question}</p>
+                                {q.options.map((option) => (
+                                    <div key={option}>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                name={`question-${index}`}
+                                                value={option}
+                                                checked={answers[index] === option}
+                                                onChange={() => handleChange(index, option)}
+                                            />
+                                            {option}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                        <button type="submit" style={{ padding: '10px', fontSize: '16px' }}>
+                            Submit
+                        </button>
+                    </form>
+                ) : (
+                    <div>
+                        <h3>Your Score: {score} / {questions.length}</h3>
+                        <button onClick={handleRestart} style={{ padding: '10px', fontSize: '16px', marginTop: '20px' }}>
+                            Restart Quiz
+                        </button>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Quiz />);
+</script>
+
+</html>
